@@ -36,6 +36,9 @@ public class Post {
 	
 	@Column(name = "dislike")
 	private int dislike;
+	
+	@Column(name = "date", length = 50, nullable = false)
+	private String date;
 
 	public Long getId() {
 		return id;
@@ -91,6 +94,14 @@ public class Post {
 
 	public void setDislike(int dislike) {
 		this.dislike = dislike;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
 	}
 	
 	
