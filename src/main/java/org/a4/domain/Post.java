@@ -30,6 +30,12 @@ public class Post {
 	
 	@Column(name = "anonymous", nullable = false)
 	private boolean anonymous;
+	
+	@Column(name = "like")
+	private int like;
+	
+	@Column(name = "dislike")
+	private int dislike;
 
 	public Long getId() {
 		return id;
@@ -69,6 +75,22 @@ public class Post {
 
 	public void setAnonymous(boolean anonymous) {
 		this.anonymous = anonymous;
+	}
+
+	public int getLike() {
+		return like;
+	}
+
+	public void setLike(int like) {
+		this.like = like;
+	}
+
+	public int getDislike() {
+		return dislike;
+	}
+
+	public void setDislike(int dislike) {
+		this.dislike = dislike;
 	}
 	
 	
