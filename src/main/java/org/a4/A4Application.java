@@ -20,7 +20,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class })
 @ComponentScan
 @EnableTransactionManagement
-@EnableJpaRepositories
+@EnableJpaRepositories("org.a4.repository")
 @EnableAsync
 @SpringBootApplication
 public class A4Application extends SpringBootServletInitializer {

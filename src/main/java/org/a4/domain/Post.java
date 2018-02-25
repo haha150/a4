@@ -31,11 +31,11 @@ public class Post {
 	@Column(name = "anonymous", nullable = false)
 	private boolean anonymous;
 	
-	@Column(name = "like")
-	private int like;
+	@Column(name = "likes", nullable = false)
+	private int likes;
 	
-	@Column(name = "dislike")
-	private int dislike;
+	@Column(name = "dislikes", nullable = false)
+	private int dislikes;
 	
 	@Column(name = "date", length = 50, nullable = false)
 	private String date;
@@ -80,20 +80,20 @@ public class Post {
 		this.anonymous = anonymous;
 	}
 
-	public int getLike() {
-		return like;
+	public int getLikes() {
+		return likes;
 	}
 
-	public void setLike(int like) {
-		this.like = like;
+	public void setLikes(int likes) {
+		this.likes = likes;
 	}
 
-	public int getDislike() {
-		return dislike;
+	public int getDislikes() {
+		return dislikes;
 	}
 
-	public void setDislike(int dislike) {
-		this.dislike = dislike;
+	public void setDislikes(int dislikes) {
+		this.dislikes = dislikes;
 	}
 
 	public String getDate() {

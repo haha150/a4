@@ -82,5 +82,13 @@ public class A4Controller {
 		}
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
+	
+	
+	
+	
+	@RequestMapping(value = "/users", method = RequestMethod.GET)
+	public ResponseEntity<List<User>> getUsers() {
+		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+	}
 
 }
