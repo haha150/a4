@@ -20,7 +20,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @EnableAutoConfiguration(exclude = { DataSourceAutoConfiguration.class })
 @ComponentScan
 @EnableTransactionManagement
-@EnableJpaRepositories("org.a4.repository")
+@EnableJpaRepositories
 @EnableAsync
 @SpringBootApplication
 public class A4Application extends SpringBootServletInitializer {
@@ -34,17 +34,5 @@ public class A4Application extends SpringBootServletInitializer {
 		return application.sources(A4Application.class);
 	}
 
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurerAdapter() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/*").allowedOrigins("*").allowedHeaders("*").allowedMethods("*");
-				registry.addMapping("/*/*").allowedOrigins("*").allowedHeaders("*").allowedMethods("*");
-				registry.addMapping("/*/*/*").allowedOrigins("*").allowedHeaders("*").allowedMethods("*");
-				registry.addMapping("/*/*/*/*").allowedOrigins("*").allowedHeaders("*").allowedMethods("*");
-				registry.addMapping("/*/*/*/*/*").allowedOrigins("*").allowedHeaders("*").allowedMethods("*");
-			}
-		};
-	}
+
 }

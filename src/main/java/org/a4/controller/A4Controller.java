@@ -1,9 +1,13 @@
 package org.a4.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.a4.domain.Post;
 import org.a4.domain.User;
+import org.a4.model.PostDTO;
 import org.a4.model.UserDTO;
 import org.a4.service.MailService;
 import org.a4.service.PostService;
@@ -20,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/rest")
 public class A4Controller {
+
+	private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	@Autowired
 	UserService userService;
@@ -83,12 +89,77 @@ public class A4Controller {
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 	
+	@RequestMapping(value = "/post/add", method = RequestMethod.PUT, consumes = { "application/json" })
+	public ResponseEntity<Post> addPost(@RequestBody PostDTO postToAdd) {
+		List<User> users = userService.getAllUsers();
+		for (User u : users) {
+			if(u.getUsername().equals(postToAdd.getUsername())) {
+				Post p = new Post();
+				p.setUser(u);
+				p.setAnonymous(postToAdd.isAnonymous());
+				p.setBody(postToAdd.getBody());
+				p.setTitle(postToAdd.getTitle());
+				p.setDate(format.format(new Date()));
+				p.setLikes(0);
+				p.setDislikes(0);
+                postService.addPost(p);
+                return new ResponseEntity<>(p, HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+
+    @RequestMapping(value = "/post/delete", method = RequestMethod.DELETE, consumes = { "application/json" })
+    public ResponseEntity<String> deletePost(@RequestBody PostDTO postToDelete) {
+                postService.deletePostById(postToDelete.getId());
+                return new ResponseEntity<>("OK", HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/post/update", method = RequestMethod.POST, consumes = { "application/json" })
+    public ResponseEntity<Post> updatePost(@RequestBody PostDTO postToUpdate) {
+        List<Post> posts = postService.getAllPosts();
+        for (Post p : posts) {
+            if(p.getId().equals(postToUpdate.getId())) {
+                p.setAnonymous(postToUpdate.isAnonymous());
+                p.setBody(postToUpdate.getBody());
+                p.setTitle(postToUpdate.getTitle());
+                p.setDate(format.format(new Date()));
+                postService.updatePost(p);
+                return new ResponseEntity<>(p, HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    }
+
+    @RequestMapping(value = "/post/like/{id}", method = RequestMethod.POST, consumes = { "application/json" })
+    public ResponseEntity<String> likePost(@PathVariable String id) {
+        List<Post> posts = postService.getAllPosts();
+        for (Post p : posts) {
+            if(p.getId().equals(id)) {
+                p.setLikes(p.getLikes()+1);
+                postService.updatePost(p);
+                return new ResponseEntity<>("OK", HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    }
+
+    @RequestMapping(value = "/post/dislike/{id}", method = RequestMethod.POST, consumes = { "application/json" })
+    public ResponseEntity<String> dislikePost(@PathVariable String id) {
+        List<Post> posts = postService.getAllPosts();
+        for (Post p : posts) {
+            if(p.getId().equals(id)) {
+                p.setDislikes(p.getDislikes()-1);
+                postService.updatePost(p);
+                return new ResponseEntity<>("OK", HttpStatus.OK);
+            }
+        }
+        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    }
 	
-	
-	
-	@RequestMapping(value = "/users", method = RequestMethod.GET)
-	public ResponseEntity<List<User>> getUsers() {
-		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+	@RequestMapping(value = "/posts", method = RequestMethod.GET)
+	public ResponseEntity<List<Post>> getPosts() {
+		return new ResponseEntity<>(postService.getAllPosts(), HttpStatus.OK);
 	}
 
 }
