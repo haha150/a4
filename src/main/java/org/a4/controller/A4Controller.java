@@ -265,22 +265,31 @@ public class A4Controller {
 	public ResponseEntity<FavoriteDTO> addFavorite(@RequestBody FavoriteDTO favoriteToAdd) {
 		List<Favorite> favorites = favoriteService.getAllFavorites();
 		List<Post> posts = postService.getAllPosts();
-
+                List<User> users = userService.getAllUsers();
 		for (Favorite f : favorites) {
 			if (f.getPost().getId().equals(favoriteToAdd.getPostId())) {
 				return new ResponseEntity<>(null, HttpStatus.CONFLICT);
 			}
 		}
-		for (Post p : posts) {
-			if (p.getId() == (favoriteToAdd.getPostId())) {
+                for (User u: users) {
+                    if (u.getId().equals(favoriteToAdd.getUserId())){
+                        for (Post p : posts) {
+			if (p.getId().equals(favoriteToAdd.getPostId())) {
 				Favorite f = new Favorite();
 				f.setPost(p);
+                                f.setUser(u);
 				f = favoriteService.addFavorite(f);
 				favoriteToAdd.setId(f.getId());
 				return new ResponseEntity<>(favoriteToAdd, HttpStatus.CREATED);
-			}
-		}
+                            }
+                        }
+                    
+                    }
+                
+                }
 
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-	}
+	
+        }
 }
+
