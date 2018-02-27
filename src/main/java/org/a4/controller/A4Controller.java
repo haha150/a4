@@ -94,7 +94,7 @@ public class A4Controller {
 	public ResponseEntity<User> loginUser(@RequestBody UserDTO userToLogin) {
 		List<User> users = userService.getAllUsers();
 		for (User u : users) {
-			if (u.getUsername().equalsIgnoreCase(userToLogin.getUsername()) && u.getPassword().equalsIgnoreCase(userToLogin.getPassword())) {
+			if (u.getEmail().equalsIgnoreCase(userToLogin.getEmail()) && u.getPassword().equalsIgnoreCase(userToLogin.getPassword())) {
 				return new ResponseEntity<>(u, HttpStatus.OK);
 			}
 		}
