@@ -245,7 +245,7 @@ public class A4Controller {
 		List<Favorite> allFavorites = favoriteService.getAllFavorites();
 		List<Favorite> userFavorites = new ArrayList<Favorite>();
 		for (Favorite f : allFavorites) {
-			if (f.getPost().getId().equals(userId)) {
+			if (f.getUser().getId().equals(userId)) {
 				userFavorites.add(f);
 			}
 		}
