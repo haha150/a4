@@ -30,6 +30,7 @@ public class Comments {
 	@JoinColumn(name = "users_id")
 	private User user;
         
+	@OneToOne(cascade = CascadeType.ALL)
         @JoinColumn(name = "posts_id")
 	private Post post;
 

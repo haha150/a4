@@ -22,7 +22,7 @@ public class User {
 	@Column(name = "verified", nullable = false)
 	private boolean verified;
 	
-	@Column(name = "uuid", unique = true, length = 20, nullable = false)
+	@Column(name = "uuid", unique = true, length = 200, nullable = false)
 	private String uuid;
 
 	public Long getId() {

@@ -1,6 +1,7 @@
 package org.a4.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -32,13 +33,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class A4Controller {
 
 	private static final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        
-        @Autowired
+
+	@Autowired
 	CommentService commentService;
-        
-        @Autowired
+
+	@Autowired
 	FavoriteService favoriteService;
-        
+
 	@Autowired
 	UserService userService;
 
@@ -52,6 +53,14 @@ public class A4Controller {
 	public ResponseEntity<String> handleInvalidCalls() {
 		return new ResponseEntity<>("Call not supported!", HttpStatus.NOT_FOUND);
 	}
+
+	/*
+	 * @RequestMapping(value = "/users", method = RequestMethod.GET) public
+	 * ResponseEntity<String> handleInvalidCalls2() { User u = new User();
+	 * u.setEmail("abc@kth.se"); u.setPassword("abc"); u.setUsername("abc");
+	 * u.setUuid("123"); u.setVerified(true); userService.addUser(u); return new
+	 * ResponseEntity<>("Call not supported!", HttpStatus.NOT_FOUND); }
+	 */
 
 	@RequestMapping(value = "/user/register", method = RequestMethod.PUT, consumes = { "application/json" })
 	public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userToAdd) {
@@ -77,7 +86,7 @@ public class A4Controller {
 		return new ResponseEntity<>(userToAdd, HttpStatus.CREATED);
 	}
 
-	@RequestMapping(value = "/user/verify/{key}", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/verify/{key}", method = RequestMethod.GET)
 	public ResponseEntity<String> verifyUser(@PathVariable String key) {
 		List<User> users = userService.getAllUsers();
 		for (User u : users) {
@@ -89,23 +98,24 @@ public class A4Controller {
 		}
 		return new ResponseEntity<>("Failed to verify user", HttpStatus.BAD_REQUEST);
 	}
-	
+
 	@RequestMapping(value = "/user/login", method = RequestMethod.POST, consumes = { "application/json" })
 	public ResponseEntity<User> loginUser(@RequestBody UserDTO userToLogin) {
 		List<User> users = userService.getAllUsers();
 		for (User u : users) {
-			if (u.getEmail().equalsIgnoreCase(userToLogin.getEmail()) && u.getPassword().equalsIgnoreCase(userToLogin.getPassword())) {
+			if (u.getEmail().equalsIgnoreCase(userToLogin.getEmail())
+					&& u.getPassword().equalsIgnoreCase(userToLogin.getPassword()) && u.isVerified()) {
 				return new ResponseEntity<>(u, HttpStatus.OK);
 			}
 		}
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
-	
+
 	@RequestMapping(value = "/post/add", method = RequestMethod.PUT, consumes = { "application/json" })
 	public ResponseEntity<Post> addPost(@RequestBody PostDTO postToAdd) {
 		List<User> users = userService.getAllUsers();
 		for (User u : users) {
-			if(u.getUsername().equals(postToAdd.getUsername())) {
+			if (u.getUsername().equals(postToAdd.getUsername())) {
 				Post p = new Post();
 				p.setUser(u);
 				p.setAnonymous(postToAdd.isAnonymous());
@@ -114,182 +124,163 @@ public class A4Controller {
 				p.setDate(format.format(new Date()));
 				p.setLikes(0);
 				p.setDislikes(0);
-                postService.addPost(p);
-                return new ResponseEntity<>(p, HttpStatus.OK);
+				postService.addPost(p);
+				return new ResponseEntity<>(p, HttpStatus.OK);
 			}
 		}
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 
-    @RequestMapping(value = "/post/delete", method = RequestMethod.DELETE, consumes = { "application/json" })
-    public ResponseEntity<String> deletePost(@RequestBody PostDTO postToDelete) {
-                postService.deletePostById(postToDelete.getId());
-                return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
+	@RequestMapping(value = "/post/delete", method = RequestMethod.DELETE, consumes = { "application/json" })
+	public ResponseEntity<String> deletePost(@RequestBody PostDTO postToDelete) {
+		postService.deletePostById(postToDelete.getId());
+		return new ResponseEntity<>("OK", HttpStatus.OK);
+	}
 
-    @RequestMapping(value = "/post/update", method = RequestMethod.POST, consumes = { "application/json" })
-    public ResponseEntity<Post> updatePost(@RequestBody PostDTO postToUpdate) {
-        List<Post> posts = postService.getAllPosts();
-        for (Post p : posts) {
-            if(p.getId().equals(postToUpdate.getId())) {
-                p.setAnonymous(postToUpdate.isAnonymous());
-                p.setBody(postToUpdate.getBody());
-                p.setTitle(postToUpdate.getTitle());
-                p.setDate(format.format(new Date()));
-                postService.updatePost(p);
-                return new ResponseEntity<>(p, HttpStatus.OK);
-            }
-        }
-        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-    }
+	@RequestMapping(value = "/post/update", method = RequestMethod.POST, consumes = { "application/json" })
+	public ResponseEntity<Post> updatePost(@RequestBody PostDTO postToUpdate) {
+		List<Post> posts = postService.getAllPosts();
+		for (Post p : posts) {
+			if (p.getId().equals(postToUpdate.getId())) {
+				p.setAnonymous(postToUpdate.isAnonymous());
+				p.setBody(postToUpdate.getBody());
+				p.setTitle(postToUpdate.getTitle());
+				p.setDate(format.format(new Date()));
+				postService.updatePost(p);
+				return new ResponseEntity<>(p, HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
 
-    @RequestMapping(value = "/post/like/{id}", method = RequestMethod.POST, consumes = { "application/json" })
-    public ResponseEntity<String> likePost(@PathVariable Long id) {
-        List<Post> posts = postService.getAllPosts();
-        for (Post p : posts) {
-            if(p.getId().equals(id)) {
-                p.setLikes(p.getLikes()+1);
-                postService.updatePost(p);
-                return new ResponseEntity<>("OK", HttpStatus.OK);
-            }
-        }
-        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-    }
+	@RequestMapping(value = "/post/like/{id}", method = RequestMethod.POST, consumes = { "application/json" })
+	public ResponseEntity<String> likePost(@PathVariable Long id) {
+		List<Post> posts = postService.getAllPosts();
+		for (Post p : posts) {
+			if (p.getId().equals(id)) {
+				p.setLikes(p.getLikes() + 1);
+				postService.updatePost(p);
+				return new ResponseEntity<>("OK", HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
 
-    @RequestMapping(value = "/post/dislike/{id}", method = RequestMethod.POST, consumes = { "application/json" })
-    public ResponseEntity<String> dislikePost(@PathVariable Long id) {
-        List<Post> posts = postService.getAllPosts();
-        for (Post p : posts) {
-            if(p.getId().equals(id)) {
-                p.setDislikes(p.getDislikes()-1);
-                postService.updatePost(p);
-                return new ResponseEntity<>("OK", HttpStatus.OK);
-            }
-        }
-        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-    }
-	
+	@RequestMapping(value = "/post/dislike/{id}", method = RequestMethod.POST, consumes = { "application/json" })
+	public ResponseEntity<String> dislikePost(@PathVariable Long id) {
+		List<Post> posts = postService.getAllPosts();
+		for (Post p : posts) {
+			if (p.getId().equals(id)) {
+				p.setDislikes(p.getDislikes() - 1);
+				postService.updatePost(p);
+				return new ResponseEntity<>("OK", HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+
 	@RequestMapping(value = "/posts", method = RequestMethod.GET)
 	public ResponseEntity<List<Post>> getPosts() {
 		return new ResponseEntity<>(postService.getAllPosts(), HttpStatus.OK);
 	}
-        
-        
-    
-        
-        
-        
-        
-        
-        
-        @RequestMapping(value = "/post/comments", method = RequestMethod.GET)
+
+	@RequestMapping(value = "/post/comments", method = RequestMethod.GET)
 	public ResponseEntity<List<Comments>> getComments(@PathVariable Long PostId) {
 		List<Comments> allComments = commentService.getAllComments();
-                List<Comments> postComments = (List<Comments>) new Comments();
-                for (Comments c : allComments){
-                    if(c.getPost().getId().equals(PostId)){
-                        postComments.add(c);
-                    }
-                }
-                return new ResponseEntity<>(postComments, HttpStatus.OK);
+		List<Comments> postComments = new ArrayList<Comments>();
+		for (Comments c : allComments) {
+			if (c.getPost().getId().equals(PostId)) {
+				postComments.add(c);
+			}
+		}
+		return new ResponseEntity<>(postComments, HttpStatus.OK);
 	}
-        
-  
-        @RequestMapping(value = "/post/comments/add", method = RequestMethod.PUT, consumes = { "application/json" })
+
+	@RequestMapping(value = "/post/comments/add", method = RequestMethod.PUT, consumes = { "application/json" })
 	public ResponseEntity<Comments> addComments(@RequestBody CommentsDTO commentToAdd) {
 		List<User> users = userService.getAllUsers();
-                List<Post> posts = postService.getAllPosts();
+		List<Post> posts = postService.getAllPosts();
 		for (Post p : posts) {
-			if(p.getId().equals(commentToAdd.getPostID())) {
-                            for (User u : users){
-                                if(u.getUsername().equals(commentToAdd.getUsername())){
-                                    Comments c = new Comments();
-                                    c.setUser(u);
-                                    c.setBody(commentToAdd.getBody());
-                                    c.setDate(format.format(new Date()));
-                                    commentService.addComment(c);
-                                    return new ResponseEntity<>(c, HttpStatus.OK);
-                                }
-                                
-                            }
-				
-                
+			if (p.getId().equals(commentToAdd.getPostID())) {
+				for (User u : users) {
+					if (u.getUsername().equals(commentToAdd.getUsername())) {
+						Comments c = new Comments();
+						c.setUser(u);
+						c.setBody(commentToAdd.getBody());
+						c.setDate(format.format(new Date()));
+						commentService.addComment(c);
+						return new ResponseEntity<>(c, HttpStatus.OK);
+					}
+
+				}
+
 			}
 		}
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
-    @RequestMapping(value = "/post/comments/update", method = RequestMethod.POST, consumes = { "application/json" })
-    public ResponseEntity<Comments> updateComments(@RequestBody CommentsDTO CommentToUpdate) {
-        List<Comments> comments = commentService.getAllComments();
-        for (Comments c : comments) {
-            if(c.getId().equals(CommentToUpdate.getId())) {
-          
-                c.setBody(CommentToUpdate.getBody());
-                c.setDate(format.format(new Date()));
-                commentService.updateComment(c);
-                return new ResponseEntity<>(c, HttpStatus.OK);
-            }
-        }
-        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-    }
-        
-        
-        
-        
-    @RequestMapping(value = "/post/comments/delete", method = RequestMethod.DELETE, consumes = { "application/json" })
-    public ResponseEntity<String> deleteComments(@RequestBody CommentsDTO commentsToDelete) {
-                commentService.deleteCommentById(commentsToDelete.getId());
-                return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
-    
-    @RequestMapping(value = "/post/profile/favorites", method = RequestMethod.GET)	
-    public ResponseEntity<List<Favorite>> getFavorites(@PathVariable Long userId) {
-        List<Favorite> allFavorites = favoriteService.getAllFavorites();
-        List<Favorite> userFavorites = (List<Favorite>) new Favorite();
-        for (Favorite f : allFavorites) {
-            if(f.getPost().getId().equals(userId)) {
-                userFavorites.add(f);
-            }
-        }
-        return new ResponseEntity<>(userFavorites, HttpStatus.OK);
-        //return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-		
-    }
-        
-    @RequestMapping(value = "/user/profile/favorite/delete", method = RequestMethod.DELETE, consumes = { "application/json" })
-    public ResponseEntity<String> deleteFavorite(@RequestBody FavoriteDTO favoriteToDelete) {
-                favoriteService.deleteFavoriteById(favoriteToDelete.getId());
-                return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
-    
+
+	@RequestMapping(value = "/post/comments/update", method = RequestMethod.POST, consumes = { "application/json" })
+	public ResponseEntity<Comments> updateComments(@RequestBody CommentsDTO CommentToUpdate) {
+		List<Comments> comments = commentService.getAllComments();
+		for (Comments c : comments) {
+			if (c.getId().equals(CommentToUpdate.getId())) {
+
+				c.setBody(CommentToUpdate.getBody());
+				c.setDate(format.format(new Date()));
+				commentService.updateComment(c);
+				return new ResponseEntity<>(c, HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+	}
+
+	@RequestMapping(value = "/post/comments/delete", method = RequestMethod.DELETE, consumes = { "application/json" })
+	public ResponseEntity<String> deleteComments(@RequestBody CommentsDTO commentsToDelete) {
+		commentService.deleteCommentById(commentsToDelete.getId());
+		return new ResponseEntity<>("OK", HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/post/profile/favorites", method = RequestMethod.GET)
+	public ResponseEntity<List<Favorite>> getFavorites(@PathVariable Long userId) {
+		List<Favorite> allFavorites = favoriteService.getAllFavorites();
+		List<Favorite> userFavorites = new ArrayList<Favorite>();
+		for (Favorite f : allFavorites) {
+			if (f.getPost().getId().equals(userId)) {
+				userFavorites.add(f);
+			}
+		}
+		return new ResponseEntity<>(userFavorites, HttpStatus.OK);
+		// return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+
+	}
+
+	@RequestMapping(value = "/user/profile/favorite/delete", method = RequestMethod.DELETE, consumes = {
+			"application/json" })
+	public ResponseEntity<String> deleteFavorite(@RequestBody FavoriteDTO favoriteToDelete) {
+		favoriteService.deleteFavoriteById(favoriteToDelete.getId());
+		return new ResponseEntity<>("OK", HttpStatus.OK);
+	}
+
 	@RequestMapping(value = "/user/profile/favorite/add", method = RequestMethod.PUT, consumes = { "application/json" })
 	public ResponseEntity<FavoriteDTO> addFavorite(@RequestBody FavoriteDTO favoriteToAdd) {
 		List<Favorite> favorites = favoriteService.getAllFavorites();
-                List<Post> posts = postService.getAllPosts();
-		
-                for (Favorite f : favorites) {
+		List<Post> posts = postService.getAllPosts();
+
+		for (Favorite f : favorites) {
 			if (f.getPost().getId().equals(favoriteToAdd.getPostId())) {
 				return new ResponseEntity<>(null, HttpStatus.CONFLICT);
 			}
 		}
-                for (Post p : posts) {
+		for (Post p : posts) {
 			if (p.getId() == (favoriteToAdd.getPostId())) {
 				Favorite f = new Favorite();
-                                f.setPost(p);
-                                f = favoriteService.addFavorite(f);
-                                favoriteToAdd.setId(f.getId());
-                                return new ResponseEntity<>(favoriteToAdd, HttpStatus.CREATED);
+				f.setPost(p);
+				f = favoriteService.addFavorite(f);
+				favoriteToAdd.setId(f.getId());
+				return new ResponseEntity<>(favoriteToAdd, HttpStatus.CREATED);
 			}
 		}
-		
-		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); 
+
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 	}
 }
-
-
-
-
-
-	
-
-    

@@ -19,7 +19,7 @@ public class MailService {
 
     private static String MAILFROM = "alisymeri@hotmail.com";
     private static String PASSWORD = "";
-    private static String LINK = "http://localhost/rest/user/verify/";
+    private static String LINK = "http://130.229.153.191:8080/rest/user/verify/";
 
 
     @Async
