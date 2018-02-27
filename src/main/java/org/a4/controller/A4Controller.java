@@ -240,7 +240,7 @@ public class A4Controller {
 		return new ResponseEntity<>("OK", HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/post/profile/favorites", method = RequestMethod.GET)
+	@RequestMapping(value = "/post/profile/favorites/{userId}", method = RequestMethod.GET)
 	public ResponseEntity<List<Favorite>> getFavorites(@PathVariable Long userId) {
 		List<Favorite> allFavorites = favoriteService.getAllFavorites();
 		List<Favorite> userFavorites = new ArrayList<Favorite>();
