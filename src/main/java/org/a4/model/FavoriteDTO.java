@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FavoriteDTO {
         private Long id;
-	private String body;
+	private Long postId;
         
         @JsonCreator
-	public FavoriteDTO(@JsonProperty("id") Long id, @JsonProperty("body") String body) {
+	public FavoriteDTO(@JsonProperty("id") Long id, @JsonProperty("postId") Long postId) {
 		this.id = id;
-		this.body = body;
+		this.postId = postId;
 	}
         public FavoriteDTO() {
 
@@ -24,12 +24,12 @@ public class FavoriteDTO {
 		this.id = id;
 	}
         
-        public String getBody() {
-		return body;
+        public Long getPostId() {
+		return postId;
 	}
 
-	public void setBody(String body) {
-		this.body = body;
+	public void setPostId(Long postId) {
+		this.postId = postId;
 	}
         
 }

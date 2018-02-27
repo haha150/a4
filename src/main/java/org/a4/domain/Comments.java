@@ -29,6 +29,9 @@ public class Comments {
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "users_id")
 	private User user;
+        
+        @JoinColumn(name = "posts_id")
+	private Post post;
 
 	@Column(name = "body", length = 200, nullable = false)
 	private String body;
@@ -53,6 +56,13 @@ public class Comments {
 		this.user = user;
 	}
 
+	public Post getPost() {
+		return post;
+	}
+
+	public void setPost(Post post) {
+		this.post = post;
+	}
 	public String getBody() {
 		return body;
 	}

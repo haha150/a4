@@ -191,14 +191,22 @@ public class A4Controller {
         @RequestMapping(value = "/post/comments/add", method = RequestMethod.PUT, consumes = { "application/json" })
 	public ResponseEntity<Comments> addComments(@RequestBody CommentsDTO commentToAdd) {
 		List<User> users = userService.getAllUsers();
-		for (User u : users) {
-			if(u.getUsername().equals(commentToAdd.getUsername())) {
-				Comments c = new Comments();
-				c.setUser(u);
-				c.setBody(commentToAdd.getBody());
-				c.setDate(format.format(new Date()));
-                commentService.addComment(c);
-                return new ResponseEntity<>(c, HttpStatus.OK);
+                List<Post> posts = postService.getAllPosts();
+		for (Post p : posts) {
+			if(p.getId().equals(commentToAdd.getPostID())) {
+                            for (User u : users){
+                                if(u.getUsername().equals(commentToAdd.getUsername())){
+                                    Comments c = new Comments();
+                                    c.setUser(u);
+                                    c.setBody(commentToAdd.getBody());
+                                    c.setDate(format.format(new Date()));
+                                    commentService.addComment(c);
+                                    return new ResponseEntity<>(c, HttpStatus.OK);
+                                }
+                                
+                            }
+				
+                
 			}
 		}
 		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
@@ -241,20 +249,24 @@ public class A4Controller {
 	@RequestMapping(value = "/user/profile/favorite/add", method = RequestMethod.PUT, consumes = { "application/json" })
 	public ResponseEntity<FavoriteDTO> addFavorite(@RequestBody FavoriteDTO favoriteToAdd) {
 		List<Favorite> favorites = favoriteService.getAllFavorites();
-		for (Favorite f : favorites) {
-			if (f.getPost().getId() == (favoriteToAdd.getId())) {
+                List<Post> posts = postService.getAllPosts();
+		
+                for (Favorite f : favorites) {
+			if (f.getPost().getId().equals(favoriteToAdd.getPostId())) {
 				return new ResponseEntity<>(null, HttpStatus.CONFLICT);
 			}
 		}
-		Post p = new Post();
-                p.setBody(favoriteToAdd.getBody());
-                
-                
-		Favorite f = new Favorite();
-		f.setPost(p);
-		f = favoriteService.addFavorite(f);
-		favoriteToAdd.setId(f.getId());
-		return new ResponseEntity<>(favoriteToAdd, HttpStatus.CREATED);
+                for (Post p : posts) {
+			if (p.getId() == (favoriteToAdd.getPostId())) {
+				Favorite f = new Favorite();
+                                f.setPost(p);
+                                f = favoriteService.addFavorite(f);
+                                favoriteToAdd.setId(f.getId());
+                                return new ResponseEntity<>(favoriteToAdd, HttpStatus.CREATED);
+			}
+		}
+		
+		return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); 
 	}
 }
 
