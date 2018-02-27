@@ -144,7 +144,7 @@ public class A4Controller {
     }
 
     @RequestMapping(value = "/post/like/{id}", method = RequestMethod.POST, consumes = { "application/json" })
-    public ResponseEntity<String> likePost(@PathVariable String id) {
+    public ResponseEntity<String> likePost(@PathVariable Long id) {
         List<Post> posts = postService.getAllPosts();
         for (Post p : posts) {
             if(p.getId().equals(id)) {
@@ -157,7 +157,7 @@ public class A4Controller {
     }
 
     @RequestMapping(value = "/post/dislike/{id}", method = RequestMethod.POST, consumes = { "application/json" })
-    public ResponseEntity<String> dislikePost(@PathVariable String id) {
+    public ResponseEntity<String> dislikePost(@PathVariable Long id) {
         List<Post> posts = postService.getAllPosts();
         for (Post p : posts) {
             if(p.getId().equals(id)) {

@@ -35,7 +35,7 @@ public class CommentsDTO {
 	}
 
 	public void setPostID(Long postId) {
-		this.postID = postID;
+		this.postID = postId;
 	}
         public Long getId() {
 		return id;
