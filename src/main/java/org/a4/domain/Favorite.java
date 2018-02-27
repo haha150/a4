@@ -30,7 +30,9 @@ public class Favorite {
         @OneToOne
 	@JoinColumn(name = "post_id")
 	private Post post;
-        
+        @OneToOne
+	@JoinColumn(name = "user_id")
+	private User user;
         
 	public Long getId() {
 		return id;
@@ -48,4 +50,12 @@ public class Favorite {
 	public void setPost(Post post) {
 		this.post = post;
 	}
+        public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+        
 }
