@@ -183,8 +183,15 @@ public class A4Controller {
         
         
         @RequestMapping(value = "/post/comments", method = RequestMethod.GET)
-	public ResponseEntity<List<Comments>> getComments() {
-		return new ResponseEntity<>(commentService.getAllComments(), HttpStatus.OK);
+	public ResponseEntity<List<Comments>> getComments(@PathVariable Long PostId) {
+		List<Comments> allComments = commentService.getAllComments();
+                List<Comments> postComments = (List<Comments>) new Comments();
+                for (Comments c : allComments){
+                    if(c.getPost().getId().equals(PostId)){
+                        postComments.add(c);
+                    }
+                }
+                return new ResponseEntity<>(postComments, HttpStatus.OK);
 	}
         
   
@@ -235,10 +242,19 @@ public class A4Controller {
                 return new ResponseEntity<>("OK", HttpStatus.OK);
     }
     
-    @RequestMapping(value = "/post/profile/favorites", method = RequestMethod.GET)
-	public ResponseEntity<List<Favorite>> getFavorites() {
-		return new ResponseEntity<>(favoriteService.getAllFavorites(), HttpStatus.OK);
-	}
+    @RequestMapping(value = "/post/profile/favorites", method = RequestMethod.GET)	
+    public ResponseEntity<List<Favorite>> getFavorites(@PathVariable Long userId) {
+        List<Favorite> allFavorites = favoriteService.getAllFavorites();
+        List<Favorite> userFavorites = (List<Favorite>) new Favorite();
+        for (Favorite f : allFavorites) {
+            if(f.getPost().getId().equals(userId)) {
+                userFavorites.add(f);
+            }
+        }
+        return new ResponseEntity<>(userFavorites, HttpStatus.OK);
+        //return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		
+    }
         
     @RequestMapping(value = "/user/profile/favorite/delete", method = RequestMethod.DELETE, consumes = { "application/json" })
     public ResponseEntity<String> deleteFavorite(@RequestBody FavoriteDTO favoriteToDelete) {
