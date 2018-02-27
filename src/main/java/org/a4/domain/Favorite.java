@@ -27,7 +27,7 @@ public class Favorite {
         @Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-        @OneToOne(cascade = CascadeType.ALL)
+        @OneToOne
 	@JoinColumn(name = "post_id")
 	private Post post;
         

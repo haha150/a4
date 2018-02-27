@@ -26,11 +26,11 @@ public class Comments {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne
 	@JoinColumn(name = "users_id")
 	private User user;
         
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne
         @JoinColumn(name = "posts_id")
 	private Post post;
 
