@@ -121,6 +121,7 @@ public class A4Controller {
 				p.setAnonymous(postToAdd.isAnonymous());
 				p.setBody(postToAdd.getBody());
 				p.setTitle(postToAdd.getTitle());
+				p.setCourseCode(postToAdd.getCourseCode());
 				p.setDate(format.format(new Date()));
 				p.setLikes(0);
 				p.setDislikes(0);
@@ -145,6 +146,7 @@ public class A4Controller {
 				p.setAnonymous(postToUpdate.isAnonymous());
 				p.setBody(postToUpdate.getBody());
 				p.setTitle(postToUpdate.getTitle());
+				p.setCourseCode(postToUpdate.getCourseCode());
 				p.setDate(format.format(new Date()));
 				postService.updatePost(p);
 				return new ResponseEntity<>(p, HttpStatus.OK);
@@ -184,12 +186,12 @@ public class A4Controller {
 		return new ResponseEntity<>(postService.getAllPosts(), HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/post/comments", method = RequestMethod.GET)
-	public ResponseEntity<List<Comments>> getComments(@PathVariable Long PostId) {
+	@RequestMapping(value = "/post/comments/{postId}", method = RequestMethod.GET)
+	public ResponseEntity<List<Comments>> getComments(@PathVariable Long postId) {
 		List<Comments> allComments = commentService.getAllComments();
 		List<Comments> postComments = new ArrayList<Comments>();
 		for (Comments c : allComments) {
-			if (c.getPost().getId().equals(PostId)) {
+			if (c.getPost().getId().equals(postId)) {
 				postComments.add(c);
 			}
 		}
@@ -206,6 +208,7 @@ public class A4Controller {
 					if (u.getUsername().equals(commentToAdd.getUsername())) {
 						Comments c = new Comments();
 						c.setUser(u);
+						c.setPost(p);
 						c.setBody(commentToAdd.getBody());
 						c.setDate(format.format(new Date()));
 						commentService.addComment(c);

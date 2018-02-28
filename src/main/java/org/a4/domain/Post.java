@@ -40,6 +40,17 @@ public class Post {
 	@Column(name = "date", length = 50, nullable = false)
 	private String date;
 
+	@Column(name = "coursecode", length = 50, nullable = false)
+	private String courseCode;
+
+	public String getCourseCode() {
+		return courseCode;
+	}
+
+	public void setCourseCode(String courseCode) {
+		this.courseCode = courseCode;
+	}
+
 	public Long getId() {
 		return id;
 	}

@@ -10,15 +10,17 @@ public class PostDTO {
 	private String body;
 	private boolean anonymous;
 	private String username;
+	private String courseCode;
 
 	@JsonCreator
 	public PostDTO(@JsonProperty("id") Long id, @JsonProperty("title") String title, @JsonProperty("body") String body,
-			@JsonProperty("anonymous") boolean anonymous, @JsonProperty("username") String username) {
+			@JsonProperty("anonymous") boolean anonymous, @JsonProperty("username") String username, @JsonProperty("coursecode") String courseCode) {
 		this.id = id;
 		this.title = title;
 		this.body = body;
 		this.anonymous = anonymous;
 		this.username = username;
+		this.courseCode = courseCode;
 	}
 
 	public PostDTO() {
@@ -65,4 +67,11 @@ public class PostDTO {
 		this.username = username;
 	}
 
+	public String getCourseCode() {
+		return courseCode;
+	}
+
+	public void setCourseCode(String courseCode) {
+		this.courseCode = courseCode;
+	}
 }
